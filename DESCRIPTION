@@ -1,0 +1,18 @@
+Package: ProjectManage
+Title: Project Management
+Version: 0.1.0
+Authors@R: 
+    person(given = "dming",
+           family = "Fan",
+           role = c("aut", "cre"),
+           email = "first.last@example.com",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: For Project Management (one paragraph).
+License: GPL3
+Encoding: UTF-8
+Imports: shiny,shinydashboard,data.table,DT,RSQLite,pool,shinyjs,uuid,dplyr,ggplot2,plotly,scales,dqshiny,shinyjs,sodium,readxl,DBI
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Depends: 
+    R (>= 2.10)

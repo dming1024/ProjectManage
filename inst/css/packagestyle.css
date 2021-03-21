@@ -1,0 +1,148 @@
+/* styling for DSAIDE/DSAIRM app
+------------------------------------------- */
+
+
+/* HOME
+-------------------- */
+#left{width:100px;left:0px; top:0px;}
+
+#shinyheadertitle
+{
+	color: #123c66;
+	font-weight: bold;
+	text-align: center;
+	font-size: 130%;
+}
+
+#shinyheadertext
+{
+	color: #123c66;
+	text-align: center;
+	font-size: 100%;
+}
+
+#shinyapptitle
+{
+	color: #123c66;
+	font-weight: bold;
+	text-align: center;
+	font-size: 1.5em;
+}
+
+
+#classauthor
+{
+	color: black;
+	font-weight: normal;
+	text-align: center;
+
+}
+
+
+iframe {
+	display: block;
+	margin-left: auto;
+    margin-right: auto;
+}
+
+
+#mytextbox
+{
+	border: 10px solid #cfd7e0;
+	color: black;
+	font-weight: normal;
+}
+
+.myinput
+{
+	display: inline-block;
+	width: 100px;
+	vertical-align: bottom;
+	font-size: 0.8em;
+}
+
+
+.MathJax {
+	font-size: 2em;
+}
+
+
+
+/* shiny progress bar
+-------------------- */
+
+
+.shiny-progress-container {
+	top: 40px;
+}
+
+.progress-message {
+	color: red;
+}
+
+.shiny-notification{
+  position: fixed;
+  top: 33%;
+  left: 33%;
+  right: 33%;
+}
+
+
+.submitbutton {
+	text-align: center;
+	color: #000000;
+	background-color: #bfc8ef;
+}
+
+
+.mainmenurow {
+	text-align: center;
+	padding-top: 0em;
+    padding-bottom: 0em;
+}
+
+.maintext {
+	text-align: center;
+	color: #2a3f9e;
+	font-weight: bold;
+}
+
+.mainsectionheader {
+	text-align: center;
+	color: #2846cc;
+	font-weight: bold;
+	font-size: 1.5em;
+    padding-top: 1em;
+}
+
+
+#infotext {
+	text-align: center;
+	color: #2a3f9e;
+
+}
+
+#bottomtext {
+	text-align: center;
+	color: black;
+}
+
+.bottomtext {
+	text-align: center;
+
+}
+
+
+
+
+.btn{
+	text-align: center;
+	color: #000000;
+	background-color: #99FFCC;
+	font-size: 1.2em;
+	display: inline-block;
+	margin-right: 10px;
+	margin-bottom:5px;
+	margin-top:5px;	
+}
+
