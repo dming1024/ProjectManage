@@ -3,6 +3,7 @@
 export(AddData)
 export(AddUsers)
 export(PMshiny)
+export(chpasswd)
 export(initializePM)
 import(DT,except=c(dataTableOutput,renderDataTable))
 import(RSQLite,except=show)
