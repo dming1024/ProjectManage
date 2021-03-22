@@ -599,7 +599,7 @@ PMshiny<-function(){
         #使用view_button，对记录的信息进行view
         shiny::observeEvent(input$view_button,priority = 20,{
           pool <<- pool::dbPool(RSQLite::SQLite(), dbname = "db.sqlite")
-          SQL_df <- DBI::dbReadTable(pool, "responses_df") %>% shiny::arrange(by_group=Status) %>% shiny::arrange(desc(Status))
+          SQL_df <- DBI::dbReadTable(pool, "responses_df") %>% dplyr::arrange(by_group=Status) %>% dplyr::arrange(desc(Status))
           pool::poolClose(pool)
 
           shiny::showModal(
