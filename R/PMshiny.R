@@ -1,7 +1,13 @@
 #' Project Manage Panle
 #'
 #' use the PMshiny() fuction to initiate the Server
-#' @import shiny shinydashboard data.table DT RSQLite pool shinyjs uuid dplyr ggplot2 plotly scales dqshiny shinyjs sodium
+#' @rawNamespace import(data.table,except=c(last,first,between))
+#' @rawNamespace import(RSQLite,except=show)
+#' @rawNamespace import(DT,except=c(dataTableOutput,renderDataTable))
+#' @rawNamespace import(dqshiny,except=c(enable,toggle,hidden,disabled,hide,click,disable,show))
+#' @rawNamespace import(shiny,except=runExample)
+#' @rawNamespace import(pool,except=show)
+#' @import shinydashboard shinyjs uuid dplyr ggplot2 scales sodium
 #' @export
 PMshiny<-function(){
 
@@ -129,11 +135,9 @@ PMshiny<-function(){
 
 
     shiny::observe({
-
       if(USER$group=="admin"){
         output$Mainui<-shiny::renderUI({
           if (USER$login == TRUE ) {
-
             shiny::includeCSS(system.file("css", "packagestyle.css", package = "ProjectManage"))
             shinydashboard::dashboardPage(skin="green",
                                           shinydashboard::dashboardHeader(title = "Project Manage",
@@ -162,13 +166,13 @@ PMshiny<-function(){
                                         shinydashboard::valueBoxOutput("progressBox",width = 6),
                                         shinydashboard::valueBoxOutput("approvalBox",width = 6),
                                         shiny::column(shiny::plotOutput("summary0"),width=10,offset = 1),
-                                        shiny::br(),
+                                        #shiny::br(),
                                         shiny::column(shiny::plotOutput("summary1"),width=10,offset = 1),
-                                        shiny::tags$br(),
+                                        #shiny::br(),
                                         shiny::column(shiny::plotOutput("dailyProject"),width=10,offset = 1),
-                                        shiny::br(),
-                                        shiny::column(shiny::plotOutput("feedback"),width=10,offset = 1),
-                                        shiny::br()
+                                        #shiny::br(),
+                                        shiny::column(shiny::plotOutput("feedback"),width=10,offset = 1)
+                                        #shiny::br()
                                       )
                               ),
                               shinydashboard::tabItem(tabName = "widgets",
@@ -193,68 +197,69 @@ PMshiny<-function(){
             loginpage
           }
         })
-
       }
-      else{output$Mainui<-shiny::renderUI({
-        if (USER$login == TRUE ){
-          shinydashboard::dashboardPage(skin="green",
-                                        shinydashboard::dashboardHeader(title = "Project Manage",
-                                        shiny::tags$li(a(href ="javascript:window.location.reload(true)",
-                                                  icon("home"),
-                                                  style = "cursor: pointer;"),
-                                                class = "dropdown")
-                        ),
+      })
 
-                        shinydashboard::dashboardSidebar(
-                          width = 170,
-                          shinydashboard::sidebarMenu(
-                            # Setting id makes input$tabs give the tabName of currently-selected tab
-                            id = "tabs",
-                            shinydashboard::menuItem("ProjectOverview", tabName = "dashboard", icon = icon("dashboard")),
-                            shinydashboard::menuItem("ProjectDetail", icon = icon("th"), tabName = "widgets")
-                          )
-                        ),
-                        shinydashboard::dashboardBody(
-                          # Boxes need to be put in a row (or column)
-                          shinydashboard::tabItems(
-                            shinydashboard:: tabItem(tabName = "dashboard",
-                                    shiny::fluidRow(
-                                      #box(width = 12,actionButton("count","IncrementProcess")),
-                                      shinydashboard::valueBoxOutput("progressBox",width = 6),
-                                      shinydashboard::valueBoxOutput("approvalBox",width = 6),
-                                      shiny::column(plotOutput("summary0"),width=10,offset = 1),
-                                      shiny::br(),
-                                      shiny::column(plotOutput("summary1"),width=10,offset = 1),
-                                      shiny::tags$br(),
-                                      shiny::column(plotOutput("dailyProject"),width=10,offset = 1),
-                                      shiny::br(),
-                                      shiny::column(plotOutput("feedback"),width=10,offset = 1),
-                                      shiny::br()
-                                    )
-                            ),
-                            shinydashboard::tabItem(abName = "widgets",
-                                    shiny::fluidRow(
-                                      shinyjs::useShinyjs(),
-                                      shinyjs::inlineCSS(appCSS),
-                                      shiny::column(shiny::dataTableOutput("dataout"),width = 12,offset=0.5),
-                                      shiny::column(shiny::actionButton("add_button", "Add", icon("plus")),
-                                                    shiny::actionButton("edit_button", "Edit", icon("edit")),
-                                             #actionButton("delete_button", "Delete", icon("trash-alt")),
-                                             shiny::actionButton("view_button","View",icon("info-circle")),
-                                             width = 12,offset=0.5)
+    shiny::observe({
+      if(USER$group=="normal"){
+        output$Mainui<-shiny::renderUI({
+          if (USER$login == TRUE ) {
+            shiny::includeCSS(system.file("css", "packagestyle.css", package = "ProjectManage"))
+            shinydashboard::dashboardPage(skin="green",
+                                          shinydashboard::dashboardHeader(title = "Project Manage",
+                                                                          tags$li(a(href ="javascript:window.location.reload(true)",
+                                                                                    icon("unlock"),
+                                                                                    style = "cursor: pointer;"),
+                                                                                  class = "dropdown")
+                                          ),
 
-                                    )
-                            )
-                          ))
+                                          shinydashboard::dashboardSidebar(
+                                            width = 175,
+                                            shinydashboard::sidebarMenu(
+                                              # Setting id makes input$tabs give the tabName of currently-selected tab
+                                              id = "tabs",
+                                              shinydashboard::menuItem("ProjectOverview", tabName = "dashboard", icon = icon("dashboard")),
+                                              shinydashboard::menuItem("ProjectDetail", icon = icon("th"), tabName = "widgets")
+                                            )
+                                          ),
+                                          shinydashboard::dashboardBody(
+                                            # Boxes need to be put in a row (or column)
+                                            shinydashboard::tabItems(
+                                              shinydashboard::tabItem(tabName = "dashboard",
+                                                                      shiny::fluidRow(
+                                                                        #box(width = 12,actionButton("count","IncrementProcess")),
+                                                                        shinydashboard::valueBoxOutput("progressBox",width = 6),
+                                                                        shinydashboard::valueBoxOutput("approvalBox",width = 6),
+                                                                        shiny::column(shiny::plotOutput("summary0"),width=10,offset = 1),
+                                                                        #shiny::br(),
+                                                                        shiny::column(shiny::plotOutput("summary1"),width=10,offset = 1),
+                                                                        #shiny::br(),
+                                                                        shiny::column(shiny::plotOutput("dailyProject"),width=10,offset = 1),
+                                                                        #shiny::br(),
+                                                                        shiny::column(shiny::plotOutput("feedback"),width=10,offset = 1)
+                                                                        #shiny::br()
+                                                                      )
+                                              ),
+                                              shinydashboard::tabItem(tabName = "widgets",
+                                                                      shiny::fluidRow(
+                                                                        shinyjs::useShinyjs(),
+                                                                        shinyjs::inlineCSS(appCSS),
+                                                                        shiny::column(DT::dataTableOutput("dataout"),width = 12,offset=0.5),
+                                                                        shiny::column(shiny::actionButton("add_button", "Add", icon("plus")),
+                                                                                      shiny::actionButton("edit_button", "Edit", icon("edit")),
+                                                                                      shiny::actionButton("view_button","View",icon("info-circle")),
+                                                                                      width = 12,offset=0.5)
+                                                                      )
+                                              )
+                                            ))
 
-          )
-        }else {
-          loginpage
-        }
-      })}
-
-    }
-    )
+            )
+          } else {
+            loginpage
+          }
+        })
+      }
+    })
 
     #后台计算
     shiny::observe({
@@ -268,7 +273,8 @@ PMshiny<-function(){
           #input$view_button
           #把数据responses_df读出来
           pool <- pool::dbPool(RSQLite::SQLite(), dbname = "db.sqlite")
-          RSQLite::dbReadTable(pool, "responses_df")
+          df=RSQLite::dbReadTable(pool, "responses_df")
+          return(df)
           pool::poolClose(pool)
         })
 

@@ -1,8 +1,8 @@
 #' Import Data List into PMshiny
 #'
 #' use the AddData() fuction to import the Project Data List
-#' @import pool RSQLite DBI sodium readxl uuid
-#' @param dataList EXCEL or NULL
+#' @import uuid
+#' @param dataList dataFrame or NULL
 #' @param overwrite default is False. if you want to overwite previous Data, set this param to True.
 #' @export
 AddData<-function(dataList,overwrite=F){

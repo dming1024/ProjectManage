@@ -1,9 +1,8 @@
 #' Add users for PMshiny
 #'
 #' use the AddUsers() fuction to initiate the Server
-#' @import pool RSQLite DBI sodium readxl
-#' @param userlist EXCEL or NULL
-#' @param initiate default is False. if you want to add users, the uerlist is EXCEL file and set this param to True.
+#' @param userlist dataFrame or NULL
+#' @param initiate default is False. if you want to add users, provide dataFrame and set this param to True.
 #' @export
 AddUsers<-function(userlist,initiate=F){
   #初始化
