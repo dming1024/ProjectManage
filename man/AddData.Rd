@@ -7,7 +7,7 @@
 AddData(dataList, overwrite = F)
 }
 \arguments{
-\item{dataList}{EXCEL or NULL}
+\item{dataList}{dataFrame or NULL}
 
 \item{overwrite}{default is False. if you want to overwite previous Data, set this param to True.}
 }

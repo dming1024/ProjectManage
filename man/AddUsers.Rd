@@ -7,9 +7,9 @@
 AddUsers(userlist, initiate = F)
 }
 \arguments{
-\item{userlist}{EXCEL or NULL}
+\item{userlist}{dataFrame or NULL}
 
-\item{initiate}{default is False. if you want to add users, the uerlist is EXCEL file and set this param to True.}
+\item{initiate}{default is False. if you want to add users, provide dataFrame and set this param to True.}
 }
 \description{
 use the AddUsers() fuction to initiate the Server
