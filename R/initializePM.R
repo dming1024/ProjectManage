@@ -1,20 +1,23 @@
 #' Initialize a PM server
 #'
-#' use the initializePM() fuction to initiate the example Server
-#' @param path the work direction
+#' use the initializePM() fuction to initiate the Server
 #' @export
-initializePM<-function(path){
+initializePM<-function(){
 #在本地路径下搭建数据库
-  setwd(path)
+  #setwd(path)
   Project_data=ProjectData
   User_data=userData
-  pool <- pool::dbPool(RSQLite::SQLite(), dbname = "db.sqlite")
+  #数据库路径
+  database=system.file("database", "db.sqlite", package = "ProjectManage")
+  pool <- pool::dbPool(RSQLite::SQLite(), dbname = database)
   #创建用户群
-  user_list<-data.frame(UserName=character(),
+  user_list<-data.frame(row_id = character(),
+                        UserName=character(),
                         Password=character(),
                         Group=character(),
                         Phone=character(),
-                        Mail=character())
+                        Mail=character(),
+                        stringsAsFactors = FALSE)
   #写到sql中
   DBI::dbWriteTable(pool, "userList", user_list, overwrite = T)
   DBI::dbWriteTable(pool, "userList", User_data, overwrite = F,append=T)

@@ -85,12 +85,13 @@ PMshiny<-function(){
 })"))
 )
   #pool <<- pool::dbPool(RSQLite::SQLite(), dbname = "db.sqlite")
-  UserInfo<-shiny::reactive({
-    pool <<- pool::dbPool(RSQLite::SQLite(), dbname = "db.sqlite")
-    df=DBI::dbReadTable(pool,"userList")
-    return(df)
-    pool::poolClose(pool)
-  })
+  #UserInfo<-shiny::reactive({
+  #  database=system.file("database", "db.sqlite", package = "ProjectManage")
+  #  pool <<- pool::dbPool(RSQLite::SQLite(), dbname = database)
+  #  df=DBI::dbReadTable(pool,"userList")
+  #  return(df)
+  #  pool::poolClose(pool)
+  #})
 
 
   server<-function(input, output, session){
@@ -98,19 +99,28 @@ PMshiny<-function(){
     login = FALSE
     group="normal"
     USER <- shiny::reactiveValues(login = login,group=group)
-    Username <- shiny::reactive({
-      if(USER$login == TRUE){
-        #获取permission权限信息
-        return(input$userName)
-      }else{
-        return("FALSE")
-      }
-    })
+    #Username <- shiny::reactive({
+    #  if(USER$login == TRUE){
+    #    #获取permission权限信息
+    #    return(input$userName)
+    #  }else{
+    #    return("FALSE")
+    #  }
+    #})
 
     shiny::observe({
       if (USER$login == FALSE) {
         if (!is.null(input$login)) {
           if (input$login > 0) {
+
+            UserInfo<-shiny::reactive({
+              database=system.file("database", "db.sqlite", package = "ProjectManage")
+              pool <<- pool::dbPool(RSQLite::SQLite(), dbname = database)
+              df=DBI::dbReadTable(pool,"userList")
+              return(df)
+              pool::poolClose(pool)
+            })
+
             Username <- shiny::isolate(input$userName)
             Password <- shiny::isolate(input$passwd)
             UserInfo=UserInfo()
@@ -133,7 +143,7 @@ PMshiny<-function(){
       }
     })
 
-
+    #admin的界面：
     shiny::observe({
       if(USER$group=="admin"){
         output$Mainui<-shiny::renderUI({
@@ -180,15 +190,52 @@ PMshiny<-function(){
                                         shinyjs::useShinyjs(),
                                         shinyjs::inlineCSS(appCSS),
                                         shiny::column(DT::dataTableOutput("dataout"),width = 12,offset=0.5),
-                                        shiny::column(shiny::actionButton("add_button", "Add", icon("plus")),
-                                                      shiny::actionButton("edit_button", "Edit", icon("edit")),
-                                                      shiny::actionButton("delete_button", "Delete", icon("trash-alt")),
-                                                      shiny::actionButton("view_button","View",icon("info-circle")),
+                                        shiny::column(shiny::actionButton("add_button", "Add", icon("plus"),
+                                                                          style="color: white; background-color:#3c8dbc;
+                                                                          width: 80px;height:30px;
+                                                                          font-size: 15px; font-weight: 200;"
+                                                                          ),
+
+                                                      shiny::actionButton("edit_button", "Edit", icon("edit"),
+                                                                          style="color: white; background-color:#3c8dbc;
+                                                                          width: 80px;height:30px;
+                                                                          font-size: 15px; font-weight: 200;"
+                                                                          ),
+
+                                                      shiny::actionButton("delete_button", "Delete", icon("trash-alt"),
+                                                                          style="color: white; background-color:#3c8dbc;
+                                                                          width: 80px;height:30px;
+                                                                          font-size: 15px; font-weight: 200;"
+                                                                          ),
+
+                                                      shiny::actionButton("view_button","View",icon("info-circle"),
+                                                                          style="color: white; background-color:#3c8dbc;
+                                                                          width: 80px;height:30px;
+                                                                          font-size: 15px; font-weight: 200;"
+                                                                          ),
                                                width = 12,offset=0.5)
                                       )
                               ),
                               shinydashboard::tabItem(tabName = "userinfo",
-                                             shiny::column(DT::dataTableOutput("userinfo_list"),width = 12,offset=0.5)
+                                             shiny::column(DT::dataTableOutput("userinfo_list"),width = 12,offset=0.5),
+                                             shiny::column(
+                                               shiny::actionButton("edit_user", "Edit", icon("edit"),
+                                                                   style="color: white; background-color:#3c8dbc;
+                                                                          width: 80px;height:30px;
+                                                                   font-size: 15px; font-weight: 200;"
+                                                                   ),
+                                               shiny::actionButton("delete_user", "Delete", icon("trash-alt"),
+                                                                   style="color: white; background-color:#3c8dbc;
+                                                                          width: 80px;height:30px;
+                                                                          font-size: 15px; font-weight: 200;"
+                                                                   ),
+                                               shiny::actionButton("add_user", "Add", icon("plus"),
+                                                                   style="color: white; background-color:#3c8dbc;
+                                                                          width: 80px;height:30px;
+                                                                   font-size: 15px; font-weight: 200;"
+                                                                   ),
+                                               width = 12,offset=0.5)
+
                               )
                             ))
 
@@ -200,6 +247,7 @@ PMshiny<-function(){
       }
       })
 
+    #normal的界面
     shiny::observe({
       if(USER$group=="normal"){
         output$Mainui<-shiny::renderUI({
@@ -246,7 +294,7 @@ PMshiny<-function(){
                                                                         shinyjs::inlineCSS(appCSS),
                                                                         shiny::column(DT::dataTableOutput("dataout"),width = 12,offset=0.5),
                                                                         shiny::column(shiny::actionButton("add_button", "Add", icon("plus")),
-                                                                                      shiny::actionButton("edit_button", "Edit", icon("edit")),
+                                                                                      #shiny::actionButton("edit_button", "Edit", icon("edit")),
                                                                                       shiny::actionButton("view_button","View",icon("info-circle")),
                                                                                       width = 12,offset=0.5)
                                                                       )
@@ -261,6 +309,82 @@ PMshiny<-function(){
       }
     })
 
+    #viewer的界面
+
+    shiny::observe({
+      if(USER$group=="viewer"){
+        output$Mainui<-shiny::renderUI({
+          if (USER$login == TRUE ) {
+            shiny::includeCSS(system.file("css", "packagestyle.css", package = "ProjectManage"))
+            shinydashboard::dashboardPage(skin="green",
+                                          shinydashboard::dashboardHeader(title = "Project Manage",
+                                                                          tags$li(a(href ="javascript:window.location.reload(true)",
+                                                                                    icon("unlock"),
+                                                                                    style = "cursor: pointer;"),
+                                                                                  class = "dropdown")
+                                          ),
+
+                                          shinydashboard::dashboardSidebar(
+                                            width = 175,
+                                            shinydashboard::sidebarMenu(
+                                              # Setting id makes input$tabs give the tabName of currently-selected tab
+                                              id = "tabs",
+                                              shinydashboard::menuItem("ProjectOverview", tabName = "dashboard", icon = icon("dashboard")),
+                                              shinydashboard::menuItem("ProjectDetail", icon = icon("th"), tabName = "widgets")
+                                            )
+                                          ),
+                                          shinydashboard::dashboardBody(
+                                            # Boxes need to be put in a row (or column)
+                                            shinydashboard::tabItems(
+                                              shinydashboard::tabItem(tabName = "dashboard",
+                                                                      shiny::fluidRow(
+                                                                        #box(width = 12,actionButton("count","IncrementProcess")),
+                                                                        shinydashboard::valueBoxOutput("progressBox",width = 6),
+                                                                        shinydashboard::valueBoxOutput("approvalBox",width = 6),
+                                                                        shiny::column(shiny::plotOutput("summary0"),width=10,offset = 1),
+                                                                        #shiny::br(),
+                                                                        shiny::column(shiny::plotOutput("summary1"),width=10,offset = 1),
+                                                                        #shiny::br(),
+                                                                        shiny::column(shiny::plotOutput("dailyProject"),width=10,offset = 1),
+                                                                        #shiny::br(),
+                                                                        shiny::column(shiny::plotOutput("feedback"),width=10,offset = 1)
+                                                                        #shiny::br()
+                                                                      )
+                                              ),
+                                              shinydashboard::tabItem(tabName = "widgets",
+                                                                      shiny::fluidRow(
+                                                                        shinyjs::useShinyjs(),
+                                                                        shinyjs::inlineCSS(appCSS),
+                                                                        shiny::column(DT::dataTableOutput("dataout"),width = 12,offset=0.5),
+                                                                        shiny::column(#shiny::actionButton("add_button", "Add", icon("plus")),
+                                                                                      #shiny::actionButton("edit_button", "Edit", icon("edit")),
+                                                                                      shiny::actionButton("view_button","View",icon("info-circle")),
+                                                                                      width = 12,offset=0.5)
+                                                                      )
+                                              )
+                                            ))
+
+            )
+          } else {
+            loginpage
+          }
+        })
+      }
+    })
+
+    #展示用户信息
+    #user_list <- shiny::reactive({
+    #  #input$SubmitUser
+    #  #input$edit_user
+    #  database=system.file("database", "db.sqlite", package = "ProjectManage")
+    #  pool <- pool::dbPool(RSQLite::SQLite(), dbname = database)
+    #  user_list=RSQLite::dbReadTable(pool, "userList")[,c(2,4,5,6)]
+    #  pool::poolClose(pool)
+    #  return(user_list)
+    #})
+
+
+
     #后台计算
     shiny::observe({
       if(USER$login == TRUE){
@@ -272,7 +396,8 @@ PMshiny<-function(){
           input$delete_button
           #input$view_button
           #把数据responses_df读出来
-          pool <- pool::dbPool(RSQLite::SQLite(), dbname = "db.sqlite")
+          database=system.file("database", "db.sqlite", package = "ProjectManage")
+          pool <- pool::dbPool(RSQLite::SQLite(), dbname = database)
           df=RSQLite::dbReadTable(pool, "responses_df")
           return(df)
           pool::poolClose(pool)
@@ -304,7 +429,8 @@ PMshiny<-function(){
         })
 
         output$dailyProject<-shiny::renderPlot({
-          pool <- pool::dbPool(RSQLite::SQLite(), dbname = "db.sqlite")
+          database=system.file("database", "db.sqlite", package = "ProjectManage")
+          pool <- pool::dbPool(RSQLite::SQLite(), dbname = database)
           df=RSQLite::dbReadTable(pool, "responses_df")
           pool::poolClose(pool)
           starDate_cut=cut.Date(as.Date(df$dateStart),breaks = "week")
@@ -336,7 +462,8 @@ PMshiny<-function(){
         })
 
         output$feedback<-shiny::renderPlot({
-          pool <- pool::dbPool(RSQLite::SQLite(), dbname = "db.sqlite")
+          database=system.file("database", "db.sqlite", package = "ProjectManage")
+          pool <- pool::dbPool(RSQLite::SQLite(), dbname = database)
           df=RSQLite::dbReadTable(pool, "responses_df")
           pool::poolClose(pool)
 
@@ -355,28 +482,6 @@ PMshiny<-function(){
           p
         })
 
-
-        #展示用户信息
-        output$userinfo_list<- DT::renderDataTable({
-          pool <- pool::dbPool(RSQLite::SQLite(), dbname = "db.sqlite")
-          user_list=RSQLite::dbReadTable(pool, "userList")[,c(1,3,4,5)]
-          pool::poolClose(pool)
-          DT::datatable(user_list,
-                    callback = JS("$('table.dataTable.no-footer').css('border-bottom', 'none');"),
-                    rownames = FALSE,
-                    selection = "none",
-                    options = list(
-                      class = "compact",
-                      #colnames = c("",""),
-                      #caption = tags$caption(myTitle, style = "color:black"),
-                      dom = 't',
-                      ordering = FALSE,
-                      paging = FALSE,
-                      searching = FALSE
-                      #headerCallback = JS(headerCallback)
-
-                    ))
-        })
 
         output$progressBox<-shinydashboard::renderValueBox({
           table <- responses_df() %>% dplyr::select(-row_id)
@@ -413,40 +518,15 @@ PMshiny<-function(){
           shinyjs::toggleState(id = "submit", condition = mandatoryFilled)
         })
 
-        #录入数据的对话框
-        entry_form <- function(button_id){
 
-          shiny::showModal(
-            shiny::modalDialog(
-              shiny::div(id=("entry_form"),
-                         shiny::tags$head(tags$style(".modal-dialog{ width:400px}")), #Modify the width of the dialog
-                         shiny::tags$head(tags$style(HTML(".shiny-split-layout > div {overflow: visible}"))), #Necessary to show the input options
-                         shiny::fluidPage(
-                           shiny::fluidRow(
-                             shiny::splitLayout(
-                               cellWidths = c("250px", "100px"),
-                               cellArgs = list(style = "vertical-align: top"),
-                               textInput("ProjectID", labelMandatory("ProjectID"), placeholder = ""),
-                               selectInput("Status", labelMandatory("Status"), multiple = FALSE, choices = c("Processing", "Done"),selected = "Processing")
-                      ),
-                      #sliderInput("age", "Age", 0, 100, 1, ticks = TRUE, width = "354px"),
-                      shiny::textAreaInput("Description", "Description", placeholder = "项目描述", height = 100, width = "354px"),
-                      shiny::splitLayout(
-                        cellWidths = c("170px", "170px"),
-                        cellArgs = list(style = "vertical-align: top"),
-                        textInput("SourceFrom", labelMandatory("SourceFrom"), placeholder = ""),
-                        textInput("Participant", labelMandatory("Participant"), placeholder = "")
-                      ),
-                      shiny::dateInput("dateEnd","End Date:"),
-                      shiny::helpText(labelMandatory(""), paste("Mandatory field.")),
-                      shiny::actionButton(button_id, "Submit")
-                    ),
-                    easyClose = TRUE
-                  )
-              )
-            )
-          )
-        }
+
+        #若果有submit事件，调取appendData，同时remove/初始化 表格数据
+        shiny::observeEvent(input$submitAdd, priority = 20,{
+          appendUser(formUser())
+          shinyjs::reset("entry_add")
+          shiny::removeModal()
+
+        })
 
         #获取输入的数据，同时自动产生row_id，universal unique identifier
         formData <- shiny::reactive({
@@ -472,9 +552,45 @@ PMshiny<-function(){
           return(formData)
         })
 
+        #录入数据的对话框
+        entry_form <- function(button_id){
+
+          shiny::showModal(
+            shiny::modalDialog(
+              shiny::div(id=("entry_form"),
+                         shiny::tags$head(tags$style(".modal-dialog{ width:400px}")), #Modify the width of the dialog
+                         shiny::tags$head(tags$style(HTML(".shiny-split-layout > div {overflow: visible}"))), #Necessary to show the input options
+                         shiny::fluidPage(
+                           shiny::fluidRow(
+                             shiny::splitLayout(
+                               cellWidths = c("250px", "100px"),
+                               cellArgs = list(style = "vertical-align: top"),
+                               textInput("ProjectID", labelMandatory("ProjectID"), placeholder = ""),
+                               selectInput("Status", labelMandatory("Status"), multiple = FALSE, choices = c("Processing", "Done"),selected = "Processing")
+                             ),
+                             #sliderInput("age", "Age", 0, 100, 1, ticks = TRUE, width = "354px"),
+                             shiny::textAreaInput("Description", "Description", placeholder = "项目描述", height = 100, width = "354px"),
+                             shiny::splitLayout(
+                               cellWidths = c("170px", "170px"),
+                               cellArgs = list(style = "vertical-align: top"),
+                               textInput("SourceFrom", labelMandatory("SourceFrom"), placeholder = ""),
+                               textInput("Participant", labelMandatory("Participant"), placeholder = "")
+                             ),
+                             shiny::dateInput("dateEnd","End Date:"),
+                             shiny::helpText(labelMandatory(""), paste("Mandatory field.")),
+                             shiny::actionButton(button_id, "Submit")
+                           ),
+                           easyClose = TRUE
+                         )
+              )
+            )
+          )
+        }
+
         #从数据库读取数据
         appendData <- function(data){
-          pool <- pool::dbPool(RSQLite::SQLite(), dbname = "db.sqlite")
+          database=system.file("database", "db.sqlite", package = "ProjectManage")
+          pool <- pool::dbPool(RSQLite::SQLite(), dbname =database)
           quary <- DBI::sqlAppendTable(pool, "responses_df", data, row.names = FALSE)
           DBI::dbExecute(pool, quary)
           pool::poolClose(pool)
@@ -505,7 +621,6 @@ PMshiny<-function(){
 
         })
 
-
         #若果有submit事件，调取appendData，同时remove/初始化 表格数据
         shiny::observeEvent(input$submit, priority = 20,{
 
@@ -515,10 +630,10 @@ PMshiny<-function(){
 
         })
 
-
         #从数据库中删除数据，根据response_table_rows_selected
         deleteData <- shiny::reactive({
-          pool <- pool::dbPool(RSQLite::SQLite(), dbname = "db.sqlite")
+          database=system.file("database", "db.sqlite", package = "ProjectManage")
+          pool <- pool::dbPool(RSQLite::SQLite(), dbname = database)
           SQL_df <- DBI::dbReadTable(pool, "responses_df")%>% dplyr::arrange(by_group=Status) %>% dplyr::arrange(desc(Status))
           row_selection <- SQL_df[input$dataout_rows_selected, "row_id"]
 
@@ -564,8 +679,8 @@ PMshiny<-function(){
               shinyjs::show("dateEnd")
             }
           })
-
-          pool <<- pool::dbPool(RSQLite::SQLite(), dbname = "db.sqlite")
+          database=system.file("database", "db.sqlite", package = "ProjectManage")
+          pool <<- pool::dbPool(RSQLite::SQLite(), dbname = database)
           SQL_df <- DBI::dbReadTable(pool, "responses_df") %>% dplyr::arrange(by_group=Status) %>% dplyr::arrange(desc(Status))
           pool::poolClose(pool)
           shiny::showModal(
@@ -598,7 +713,8 @@ PMshiny<-function(){
 
         #使用view_button，对记录的信息进行view
         shiny::observeEvent(input$view_button,priority = 20,{
-          pool <<- pool::dbPool(RSQLite::SQLite(), dbname = "db.sqlite")
+          database=system.file("database", "db.sqlite", package = "ProjectManage")
+          pool <<- pool::dbPool(RSQLite::SQLite(), dbname = database)
           SQL_df <- DBI::dbReadTable(pool, "responses_df") %>% dplyr::arrange(by_group=Status) %>% dplyr::arrange(desc(Status))
           pool::poolClose(pool)
 
@@ -673,15 +789,14 @@ PMshiny<-function(){
 
             })
 
-
           }
 
         })
 
-
         #更新后台数据库
         shiny::observeEvent(input$submit_edit, priority = 20, {
-          pool <- pool::dbPool(RSQLite::SQLite(), dbname = "db.sqlite")
+          database=system.file("database", "db.sqlite", package = "ProjectManage")
+          pool <- pool::dbPool(RSQLite::SQLite(), dbname = database)
           SQL_df <- DBI::dbReadTable(pool, "responses_df") %>% dplyr::arrange(by_group=Status) %>% dplyr::arrange(desc(Status))
           row_selection <- SQL_df[input$dataout_row_last_clicked, "row_id"]
           DBI::dbExecute(pool, sprintf('UPDATE "responses_df" SET "ProjectID" = ?, "Description" = ?, "SourceFrom" = ?,
@@ -697,7 +812,195 @@ PMshiny<-function(){
 
         })
 
+        ###添加用户
+        #从数据库读取数据
+        appendUser <- function(data){
+          database=system.file("database", "db.sqlite", package = "ProjectManage")
+          pool <- pool::dbPool(RSQLite::SQLite(), dbname =database)
+          quary <- DBI::sqlAppendTable(pool, "userList", data, row.names = FALSE)
+          DBI::dbExecute(pool, quary)
+          pool::poolClose(pool)
+        }
 
+        #如果有add_button时间，唤醒entry_form表格
+        shiny::observeEvent(input$add_user, priority = 20,{
+          entry_add("submitAdd")
+        })
+
+        entry_add<-function(button_id){
+
+          shiny::showModal(
+            shiny::modalDialog(
+              shiny::div(id=("entry_add"),
+                         shiny::tags$head(tags$style(".modal-dialog{ width:400px}")), #Modify the width of the dialog
+                         shiny::tags$head(tags$style(HTML(".shiny-split-layout > div {overflow: visible}"))), #Necessary to show the input options
+                         shiny::fluidPage(
+                           shiny::fluidRow(
+                             shiny::splitLayout(
+                               cellWidths = c("250px", "100px"),
+                               cellArgs = list(style = "vertical-align: top"),
+                               textInput("UserName", labelMandatory("UserName"), placeholder = ""),
+                               selectInput("Group", labelMandatory("Group"), multiple = FALSE, choices = c("normal", "viewer"),selected = "viewer")
+                             ),
+                             #sliderInput("age", "Age", 0, 100, 1, ticks = TRUE, width = "354px"),
+                             #shiny::textAreaInput("Description", "Description", placeholder = "项目描述", height = 100, width = "354px"),
+                             textInput("Password", labelMandatory("Password"), placeholder = ""),
+                             shiny::splitLayout(
+                               cellWidths = c("170px", "170px"),
+                               cellArgs = list(style = "vertical-align: top"),
+                               textInput("Phone", "Phone", placeholder = ""),
+                               textInput("Mail", "Mail", placeholder = "")
+                             ),
+                             #shiny::dateInput("dateEnd","End Date:"),
+                             #shiny::helpText(labelMandatory(""), paste("Mandatory field.")),
+                             shiny::actionButton(button_id, "Submit")
+                           ),
+                           easyClose = TRUE
+                         )
+              )
+            )
+          )
+        }
+
+        #编辑用户信息
+        entry_user <- function(button_id){
+
+          shiny::showModal(
+            shiny::modalDialog(
+              shiny::div(id=("entry_user"),
+                         shiny::tags$head(tags$style(".modal-dialog{ width:400px}")), #Modify the width of the dialog
+                         shiny::tags$head(tags$style(HTML(".shiny-split-layout > div {overflow: visible}"))), #Necessary to show the input options
+                         shiny::fluidPage(
+                           shiny::fluidRow(
+                             shiny::splitLayout(
+                               cellWidths = c("250px", "100px"),
+                               cellArgs = list(style = "vertical-align: top"),
+                               textInput("Phone", labelMandatory("Phone"), placeholder = "")
+                             ),
+                             #sliderInput("age", "Age", 0, 100, 1, ticks = TRUE, width = "354px"),
+                             shiny::textInput("Mail", "Mail"),
+                             #shiny::splitLayout(
+                             #   cellWidths = c("170px", "170px"),
+                             #   cellArgs = list(style = "vertical-align: top"),
+                             #   textInput("SourceFrom", labelMandatory("SourceFrom"), placeholder = ""),
+                             #   textInput("Participant", labelMandatory("Participant"), placeholder = "")
+                             # ),
+                             # shiny::dateInput("dateEnd","End Date:"),
+                             # shiny::helpText(labelMandatory(""), paste("Mandatory field.")),
+                             shiny::actionButton(button_id, "SubmitUser")
+                           ),
+                           easyClose = TRUE
+                         )
+              )
+            )
+          )
+        }
+
+        formUser <- shiny::reactive({
+
+          formData <- data.frame(row_id = UUIDgenerate(),
+                                 UserName = input$UserName,
+                                 Password = sodium::password_store(input$Password),
+                                 Group = input$Group,
+                                 Phone = input$Phone,
+                                 Mail = input$Mail,
+                                 stringsAsFactors = FALSE)
+          return(formData)
+        })
+
+        #更新后台user
+        shiny::observeEvent(input$edit_user, priority = 20,{
+
+          #展示新的修改结果
+          database=system.file("database", "db.sqlite", package = "ProjectManage")
+          pool <<- pool::dbPool(RSQLite::SQLite(), dbname = database)
+          SQL_df <- DBI::dbReadTable(pool, "userList")
+          pool::poolClose(pool)
+
+          shiny::showModal(
+            if(length(input$userinfo_list_rows_selected) > 1 ){
+              shiny::modalDialog(
+                title = "Warning",
+                paste("Please select only one row." ),easyClose = TRUE)
+            } else if(length(input$userinfo_list_rows_selected) < 1){
+              shiny::modalDialog(
+                title = "Warning",
+                paste("Please select a row." ),easyClose = TRUE)
+            })
+
+          if(length(input$userinfo_list_rows_selected) == 1 ){
+            entry_user("SubmitUser")
+            shiny::updateTextInput(session, "Phone", value = SQL_df[input$userinfo_list_rows_selected, "Phone"])
+            shiny::updateTextInput(session, "Mail", value = SQL_df[input$userinfo_list_rows_selected, "Mail"])
+
+          }
+        })
+
+        #更新sql数据库
+        shiny::observeEvent(input$SubmitUser, priority = 20, {
+          database=system.file("database", "db.sqlite", package = "ProjectManage")
+          pool <- pool::dbPool(RSQLite::SQLite(), dbname = database)
+          SQL_df <- DBI::dbReadTable(pool, "userList")
+
+          row_selection <- SQL_df[input$userinfo_list_rows_selected, "row_id"]
+          DBI::dbExecute(pool, sprintf('UPDATE "userList" SET "Phone" = ?, "Mail" = ? WHERE "row_id" = ("%s")', row_selection),
+                         param = list(as.character(input$Phone),
+                                      as.character(input$Mail)))
+          shiny::removeModal()
+          pool::poolClose(pool)
+        })
+
+        #从数据库中删除数据，根据response_table_rows_selected
+        deleteUsers <- shiny::reactive({
+          database=system.file("database", "db.sqlite", package = "ProjectManage")
+          pool <- pool::dbPool(RSQLite::SQLite(), dbname = database)
+          SQL_df <- DBI::dbReadTable(pool, "userList")
+          row_selection <- SQL_df[input$userinfo_list_rows_selected, "row_id"]
+
+          quary <- lapply(row_selection, function(nr){
+            DBI::dbExecute(pool, sprintf('DELETE FROM "userList" WHERE "row_id" == ("%s")', nr))
+          })
+          pool::poolClose(pool)
+        })
+
+        #将delet button事件与deleteData函数连接
+        shiny::observeEvent(input$delete_user, priority = 20,{
+
+          if(length(input$userinfo_list_rows_selected)>=1 ){
+            deleteUsers()
+          }
+
+          shiny::showModal(
+
+            if(length(input$userinfo_list_rows_selected) < 1 ){
+              shiny::modalDialog(
+                title = "Warning",
+                paste("Please select row(s)." ),easyClose = TRUE
+              )
+            })
+        })
+
+        output$userinfo_list<- DT::renderDataTable({
+          database=system.file("database", "db.sqlite", package = "ProjectManage")
+          pool <- pool::dbPool(RSQLite::SQLite(), dbname = database)
+          user_list=RSQLite::dbReadTable(pool, "userList")[,c(2,4,5,6)]
+          pool::poolClose(pool)
+          DT::datatable(user_list,
+                        callback = JS("$('table.dataTable.no-footer').css('border-bottom', 'none');"),
+                        rownames = FALSE,
+                        #selection = "none",
+                        options = list(
+                          class = "compact",
+                          #colnames = c("",""),
+                          #caption = tags$caption(myTitle, style = "color:black"),
+                          dom = 't',
+                          ordering = FALSE,
+                          paging = FALSE,
+                          searching = FALSE
+                          #headerCallback = JS(headerCallback)
+
+                        ))
+        })
 
         output$dataout <- DT::renderDataTable({
           table <- responses_df() %>% dplyr::select(-row_id)

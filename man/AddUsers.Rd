@@ -4,13 +4,13 @@
 \alias{AddUsers}
 \title{Add users for PMshiny}
 \usage{
-AddUsers(userlist, initiate = F)
+AddUsers(initiate = T, userlist)
 }
 \arguments{
-\item{userlist}{dataFrame or NULL}
+\item{initiate}{default is T if you want to add users, provide dataFrame and set this param to True.}
 
-\item{initiate}{default is False. if you want to add users, provide dataFrame and set this param to True.}
+\item{userlist}{a excel file,including:UserName,Password,Group,Phone and Mail}
 }
 \description{
-use the AddUsers() fuction to initiate the Server
+use the AddUsers() fuction to add users in bulk
 }

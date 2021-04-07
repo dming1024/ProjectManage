@@ -4,11 +4,8 @@
 \alias{initializePM}
 \title{Initialize a PM server}
 \usage{
-initializePM(path)
-}
-\arguments{
-\item{path}{the work direction}
+initializePM()
 }
 \description{
-use the initializePM() fuction to initiate the example Server
+use the initializePM() fuction to initiate the Server
 }

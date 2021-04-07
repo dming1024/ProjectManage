@@ -5,8 +5,8 @@
 #' @param newpasswd newpassword
 #' @export
 chpasswd<-function(username,newpasswd){
-
-  pool <- pool::dbPool(RSQLite::SQLite(), dbname = "db.sqlite")
+  database=system.file("database", "db.sqlite", package = "ProjectManage")
+  pool <- pool::dbPool(RSQLite::SQLite(), dbname = database)
   newpasswd=sapply(newpasswd, sodium::password_store)
   DBI::dbExecute(pool, sprintf('UPDATE "userList" SET "Password" = ? WHERE "UserName" = ("%s")', username),
                  param = list(newpasswd)
