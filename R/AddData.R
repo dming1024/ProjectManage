@@ -36,7 +36,6 @@ AddData<-function(dataList,overwrite=F){
     b=uuid::UUIDgenerate(n=nrow(df2))
     b=data.frame(row_id=b)
     df3=cbind(b,df2)
-    pool <- pool::dbPool(RSQLite::SQLite(), dbname = "db.sqlite")
     DBI::dbWriteTable(pool, "responses_df", df3, overwrite =F,append=T)
     pool::poolClose(pool)
   }
