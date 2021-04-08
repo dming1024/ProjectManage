@@ -6,7 +6,9 @@
 #' @param overwrite default is False. if you want to overwite previous Data, set this param to True.
 #' @export
 AddData<-function(dataList,overwrite=F){
-  pool <<- pool::dbPool(RSQLite::SQLite(), dbname = "db.sqlite")
+
+  database=system.file("database", "db.sqlite", package = "ProjectManage")
+  pool <<- pool::dbPool(RSQLite::SQLite(), dbname = database)
   if(overwrite){
     responses_df <- data.frame(row_id = character(),
                                ProjectID = character(),
